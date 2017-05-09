@@ -1,0 +1,80 @@
+
+**** Clean-only build of configuration Debug for project launchpadXL_progressive_tests ****
+
+/home/matteo/CCS/ccsv7/utils/bin/gmake -k -j 4 clean -O 
+rm -rf  "launchpadXL_progressive_tests.hex"  "launchpadXL_progressive_tests.out" 
+rm -rf "F2837xS_CodeStartBranch.obj" "F2837xS_CpuTimers.obj" "F2837xS_DefaultISR.obj" "F2837xS_GlobalVariableDefs.obj" "F2837xS_Gpio.obj" "F2837xS_PieCtrl.obj" "F2837xS_PieVect.obj" "F2837xS_SysCtrl.obj" "F2837xS_struct.obj" "F2837xS_usDelay.obj" "src/main.obj" 
+rm -rf "F2837xS_CpuTimers.d" "F2837xS_DefaultISR.d" "F2837xS_GlobalVariableDefs.d" "F2837xS_Gpio.d" "F2837xS_PieCtrl.d" "F2837xS_PieVect.d" "F2837xS_SysCtrl.d" "F2837xS_struct.d" "src/main.d" 
+rm -rf "F2837xS_CodeStartBranch.d" "F2837xS_usDelay.d" 
+Finished clean
+ 
+
+**** Build Finished ****
+
+**** Build of configuration Debug for project launchpadXL_progressive_tests ****
+
+/home/matteo/CCS/ccsv7/utils/bin/gmake -k -j 4 all -O 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CodeStartBranch.asm
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_CodeStartBranch.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CodeStartBranch.asm"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CodeStartBranch.asm
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CpuTimers.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_CpuTimers.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CpuTimers.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_CpuTimers.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_DefaultISR.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_DefaultISR.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_DefaultISR.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_DefaultISR.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieCtrl.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_PieCtrl.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieCtrl.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieCtrl.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieVect.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_PieVect.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieVect.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_PieVect.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_Gpio.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_Gpio.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_Gpio.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_Gpio.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_usDelay.asm
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_usDelay.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_usDelay.asm"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_usDelay.asm
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_struct.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_struct.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_struct.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_struct.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_SysCtrl.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_SysCtrl.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_SysCtrl.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/source/F2837xS_SysCtrl.c
+ 
+Building file: ../src/main.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="src/main.d" --obj_directory="src"  "../src/main.c"
+Finished building: ../src/main.c
+ 
+Building file: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/source/F2837xS_GlobalVariableDefs.c
+Invoking: C2000 Compiler
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests" --include_path="/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" --include_path="/home/matteo/Projects/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/inc" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/include" --include_path="/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/include" --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number --preproc_with_compile --preproc_dependency="F2837xS_GlobalVariableDefs.d"  "/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/source/F2837xS_GlobalVariableDefs.c"
+Finished building: /home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/source/F2837xS_GlobalVariableDefs.c
+ 
+Building target: launchpadXL_progressive_tests.out
+Invoking: C2000 Linker
+"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 --define=CPU1 --define=_LAUNCHXL_F28377S -g --diag_warning=225 --diag_wrap=off --display_error_number -z -m"launchpadXL_progressive_tests.map" --stack_size=0x200 --warn_sections -i"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/lib" -i"/home/matteo/CCS/ccsv7/tools/compiler/ti-cgt-c2000_16.9.1.LTS/include" -i"/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/common/cmd" -i"/home/matteo/ti/C2000Ware_1_00_00_00_Software/device_support/f2837xs/headers/cmd" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="launchpadXL_progressive_tests_linkInfo.xml" --entry_point=code_start --rom_model -o "launchpadXL_progressive_tests.out" "./F2837xS_CodeStartBranch.obj" "./F2837xS_CpuTimers.obj" "./F2837xS_DefaultISR.obj" "./F2837xS_GlobalVariableDefs.obj" "./F2837xS_Gpio.obj" "./F2837xS_PieCtrl.obj" "./F2837xS_PieVect.obj" "./F2837xS_SysCtrl.obj" "./F2837xS_struct.obj" "./F2837xS_usDelay.obj" "./src/main.obj"  -llibc.a -lrts2800_fpu32.lib -l2837xS_Generic_RAM_lnk.cmd -lF2837xS_Headers_nonBIOS.cmd 
+<Linking>
+warning #10063-D: entry-point symbol other than "_c_int00" specified:  "code_start"
+Finished building target: launchpadXL_progressive_tests.out
+ 
+
+**** Build Finished ****
