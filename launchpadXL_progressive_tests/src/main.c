@@ -8,6 +8,10 @@
 
 #include "F28x_Project.h"
 #include "main.h"
+#include <stdio.h>
+#include <string.h>
+#include <float.h>
+
 
 #ifdef _LAUNCHXL_F28377S
 #define _LED_GPIO    12
@@ -15,25 +19,28 @@
 #define _LED_GPIO    28
 #endif
 
-
+char receivedMsg[16] = {0};
+unsigned char rxBuff[4] = {0};
+char line[20];
+char *msg;
 
 
 void main(void){
 
     Uint16 SendChar;
     Uint16 ReceivedChar;
-    char *msg;
+
 
     //Always initialize the system with this func (PLL, WatchDog, enable Peripheral Clocks)
     InitSysCtrl();
-
+    //MANTIENI QUESTO ORDINE DI AVVIO DELLE PERIFERICHE E INTERRUPT
     MyGpioSetup();
     MyISRSetup();
     MyXINTSetup();
+    SCIAFifoInit();
     MySCIASetup();
     MySCICSetup();
-    SCIAFifoInit();
-    SCICFifoInit();
+
 
     //THE SYSTEM IS UNDER TESTS it should read from SCIC and echo from SCIA and also change behavior
     //on ctrl messages from both SCIC and SCIA
@@ -47,29 +54,37 @@ void main(void){
     msg = "\r\nYou will enter a character, and the DSP will echo it back! \n\0";
     SCIASendMsg(msg);
 
+    msg = "\r\nEnter a message: \0";
+    SCIASendMsg(msg);
+
     while(1){
-        msg = "\r\nEnter a character: \0";
-        SCIASendMsg(msg);
-        while(SciaRegs.SCIFFRX.bit.RXFFST == 0) {
-            if(ScicRegs.SCIFFRX.bit.RXFFST == 0){
-                //LED D9 blinks if the system is in IDLE waiting for an input from the user
-                GPIO_WritePin(_LED_GPIO, 0);
-                DELAY_US(200*500);
-                GPIO_WritePin(_LED_GPIO, 1);
-                DELAY_US(200*500);
-            }else {
-                ReceivedChar = ScicRegs.SCIRXBUF.all;
-                //I send back to the pc what I receive from the loop
-                msg = "  You sent: \0";
-                SCIASendMsg(msg);
-                SCIAXmit(ReceivedChar);
-            }
-        }
 
-        ReceivedChar = SciaRegs.SCIRXBUF.all;
+//        while(SciaRegs.SCIFFRX.bit.RXFFST == 0) {
+//            if(ScicRegs.SCIFFRX.bit.RXFFST == 0){
+//                //LED D9 blinks if the system is in IDLE waiting for an input from the user
+//                GPIO_WritePin(_LED_GPIO, 0);
+//                DELAY_US(200*500);
+//                GPIO_WritePin(_LED_GPIO, 1);
+//                DELAY_US(200*500);
+//            }else {
+//                ReceivedChar = ScicRegs.SCIRXBUF.all;
+//                //I send back to the pc what I receive from the loop
+//                msg = "  You sent: \0";
+//                SCIASendMsg(msg);
+//                SCIAXmit(ReceivedChar);
+//            }
+//        }
+//
+//        ReceivedChar = SciaRegs.SCIRXBUF.all;
+//
+//        //What i receive from the pc I send with the SCIC which is in loopback mode
+//        SCICXmit(ReceivedChar);
 
-        //What i receive from the pc I send with the SCIC which is in loopback mode
-        SCICXmit(ReceivedChar);
+//            GPIO_WritePin(_LED_GPIO, 0);
+//            DELAY_US(200*500);
+//            GPIO_WritePin(_LED_GPIO, 1);
+//            DELAY_US(200*500);
+
 
     }
 
@@ -92,7 +107,6 @@ void MySCIASetup(void){
         SciaRegs.SCICTL2.all = 0x0003;
         SciaRegs.SCICTL2.bit.TXINTENA = 1;
         SciaRegs.SCICTL2.bit.RXBKINTENA = 1;
-
         //
         // SCIA at 9600 baud
         // @LSPCLK = 50 MHz (200 MHz SYSCLK) HBAUD = 0x02 and LBAUD = 0x8B.
@@ -105,6 +119,7 @@ void MySCIASetup(void){
         SciaRegs.SCILBAUD.all    =0x8B;
 
         SciaRegs.SCICTL1.all = 0x0023;  // Relinquish SCI from Reset
+
 }
 
 //SCIC is used on GPIO89 GPIO90 to communicate with other systems
@@ -129,9 +144,8 @@ void MySCICSetup(void){
                                         // async mode, idle-line protocol
         ScicRegs.SCICTL1.all = 0x0003;  // enable TX, RX, internal SCICLK,
                                         // Disable RX ERR, SLEEP, TXWAKE
-        ScicRegs.SCICTL2.all = 0x0003;
-        ScicRegs.SCICTL2.bit.TXINTENA = 1;
-        ScicRegs.SCICTL2.bit.RXBKINTENA = 1;
+
+
 
         //
         // SCIC at 9600 baud
@@ -143,8 +157,13 @@ void MySCICSetup(void){
 
         ScicRegs.SCIHBAUD.all    =0x02;
         ScicRegs.SCILBAUD.all    =0x8B;
+        //ScicRegs.SCICTL2.bit.TXINTENA = 1;
+        //ScicRegs.SCICTL2.bit.RXBKINTENA = 1;
+        ScicRegs.SCICTL2.all = 0x3;
+
         ScicRegs.SCICCR.bit.LOOPBKENA = 1; // Enable loop back
         ScicRegs.SCICTL1.all = 0x0023;  // Relinquish SCI from Reset
+        SCICFifoInit();
 }
 
 
@@ -152,8 +171,11 @@ void MySCICSetup(void){
 
 void SCIAFifoInit(void){
 
-    SciaRegs.SCIFFTX.all = 0xE040;
-    SciaRegs.SCIFFRX.all = 0x2044;
+//DO NOT TOUCH SCIFFTX!!!
+    SciaRegs.SCIFFTX.all = 0xE065; //WORKING INTERRUPT TRIGGER FOR FIFO WITH AT LEAST TWO POS FILL
+//    SciaRegs.SCIFFTX.all = 0xE042; // FOR INTERRUPT TRIGGER WITH FIFO LESS THAN 2 POS
+//IT SHOULD BE SET TO GIVE INTERRUPT WHEN THE FIFO IS FULL
+    SciaRegs.SCIFFRX.all = 0xE06F;
     SciaRegs.SCIFFCT.all = 0x0;
 
 }
@@ -163,7 +185,7 @@ void SCIAFifoInit(void){
 void SCIAXmit(int a){
 
     while (SciaRegs.SCIFFTX.bit.TXFFST != 0) {}
-        SciaRegs.SCITXBUF.all =a;
+        SciaRegs.SCITXBUF.bit.TXDT =a;
 }
 
 //Write a message (several characters) in the output buffer through SCIxXmit
@@ -183,9 +205,10 @@ void SCIASendMsg(char * msg){
 
 
 void SCICFifoInit(void){
-
-    ScicRegs.SCIFFTX.all = 0xE040;
-    ScicRegs.SCIFFRX.all = 0x2044;
+    //The transmit FIFO can resume transmit or receive
+    ScicRegs.SCIFFTX.all = 0xE065;
+    //For receive FIFO sets that is calling interrupt whenever the FIFO has 16 words (byte)
+    ScicRegs.SCIFFRX.all = 0xE06F;
     ScicRegs.SCIFFCT.all = 0x0;
 
 }
@@ -207,13 +230,56 @@ void SCICSendMsg(char * msg){
 }
 
 interrupt void xint1_isr(void){
-
-    if(GpioDataRegs.GPADAT.bit.GPIO12 == 1) GPIO_WritePin(_LED_GPIO, 0);
-
+    int i;
+    //if(GpioDataRegs.GPADAT.bit.GPIO12 == 1) GPIO_WritePin(_LED_GPIO, 0);
+    for (i = 0; i<10;i++){
+        GPIO_WritePin(_LED_GPIO, 0);
+                        DELAY_US(1000*500);
+                        GPIO_WritePin(_LED_GPIO, 1);
+                        DELAY_US(1000*500);
+    }
     // Acknowledge this interrupt to get more from group 1
     //
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
+    //PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+}
 
+interrupt void sciaRX_isr(void){
+    //The FIFO is set to be full after 16 words
+    int  i;
+    int msgLen = SciaRegs.SCIFFRX.bit.RXFFIL -1;
+
+    for(i=0;i<msgLen;i++) {
+        receivedMsg[i] = SciaRegs.SCIRXBUF.bit.SAR;
+    }
+    msgDecoder(receivedMsg);
+    SciaRegs.SCIFFRX.bit.RXFIFORESET = 0;
+    SciaRegs.SCIFFRX.bit.RXFIFORESET = 1;
+    SciaRegs.SCIFFRX.bit.RXFFOVRCLR = 1;
+    SciaRegs.SCIFFRX.bit.RXFFINTCLR = 1;
+
+    for(i=0;i<msgLen;i++) {
+        SciaRegs.SCITXBUF.bit.TXDT= receivedMsg[i];
+        receivedMsg[i]=0;
+    }
+
+    // Acknowledge this interrupt to get more from group 9
+    //
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+}
+
+interrupt void sciaTX_isr(void){
+    //For the configuration of the SCIFFTX reg, this interrupt is triggered when the SCIFFTXBUF
+    //is less than or equal 2
+    unsigned int i;
+
+    // copy 16 character into SCI-A TX buffer
+
+    for(i=0;i<16;i++) SciaRegs.SCITXBUF.all= receivedMsg[i]; //SCITXBUF.bit.TXDT
+
+    // Acknowledge this interrupt to receive more interrupts from group 9
+
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
 }
 
 void MyGpioSetup(void){
@@ -249,6 +315,76 @@ void MyGpioSetup(void){
 
 }
 
+void msgDecoder(char *msg){
+    int i = 0;
+    float x;
+    if(msg[0] == 'D'){
+        while(msg[i] != '\n'){
+            rxBuff[i] = msg[i+1];
+        }
+        x = *(float *)&rxBuff;
+        sprintf(msg,"%f",x);
+        msg = strcat(msg,"\0");
+        SCIASendMsg(msg);
+    }
+    else if(msg[0] == 'C'){
+        if(strcmp(msg,"COFF")){
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+        }
+        else if(strcmp(msg,"CON")){
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+        }
+        else if(strcmp(msg,"CTEST")){
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+        }
+        else if(strcmp(msg,"CRESET")){
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 0);
+            DELAY_US(200*500);
+            GPIO_WritePin(_LED_GPIO, 1);
+            DELAY_US(200*500);
+
+        }
+        else{}
+
+    }
+
+
+
+}
+
 void MyISRSetup(void){
     // Here we are going to initialize the PIE vectors, XBAR periph for muxing the GPIO pins to XINT
 
@@ -266,16 +402,23 @@ void MyISRSetup(void){
     // ISR functions found within this file.
     //
     EALLOW;  // This is needed to write to EALLOW protected registers
-    PieVectTable.XINT1_INT = &xint1_isr;
+    //PieVectTable.XINT1_INT = &xint1_isr;
+    PieVectTable.SCIA_RX_INT = &sciaRX_isr;
+    PieVectTable.SCIA_TX_INT = &sciaTX_isr;
+    //PieVectTable.SCIC_RX_INT = &scic_isr;
     //PieVectTable.XINT2_INT = &xint2_isr;
     EDIS;    // This is needed to disable write to EALLOW protected registers
 
     //
-    //Here we initialize the registers to enable XINT1 and XINT2
+    //Here we initialize the registers to enable XINT1, SCIATX-RX and SCICTX-RX
     //
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;          // Enable the PIE block
-    PieCtrlRegs.PIEIER1.bit.INTx4 = 1;          // Enable PIE Group 1 INT4
-    IER |= M_INT1;                              // Enable CPU for INT1
+    //PieCtrlRegs.PIEIER1.bit.INTx4 = 1;          // Enable PIE Group 1 INT4
+    PieCtrlRegs.PIEIER9.bit.INTx2 = 1;
+    PieCtrlRegs.PIEIER9.bit.INTx1 = 1;
+    //PieCtrlRegs.PIEIER8.bit.INTx5 = 1;
+    //PieCtrlRegs.PIEIER8.bit.INTx6 = 1;
+    IER = 0x100;                            // Enable CPU for INT1 and INT6 in which are interrupts for both XINT1 and SCIA SCIC
     EINT;                                       // Enable Global Interrupts
 }
 
