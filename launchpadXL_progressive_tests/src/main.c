@@ -11,6 +11,19 @@
 #include <string.h>
 #include <float.h>
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+//  This firmware setup SCIA and SCIC and decodes commands from SCIC RX
+//  calling decodeMsg(msg), the commands come from another external UART
+//  The commands are then echoed back through SCIA TX to a serial terminal
+//  on a pc via the usb host XDS100v2 onboard the LAUNCHXL F28377s
+//
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+
 
 
 #ifdef _LAUNCHXL_F28377S
@@ -21,19 +34,17 @@
 
 union {
    float f;
+   int i;
    char c[4];
 } c2f;
 
-char receivedMsg[16] = {0};
-//unsigned char rxBuff[4] = {0};
-char line[20];
+char receivedMsgA[16] = {0};
+char receivedMsgC[16] = {0};
+char line[16];
 char *msg;
 
 
 void main(void){
-
-    Uint16 SendChar;
-    Uint16 ReceivedChar;
 
 
     //Always initialize the system with this func (PLL, WatchDog, enable Peripheral Clocks)
@@ -45,7 +56,7 @@ void main(void){
     SCIAFifoInit();
     MySCIASetup();
     MySCICSetup();
-
+    SCICFifoInit();
 
     //THE SYSTEM IS UNDER TESTS it should read from SCIC and echo from SCIA and also change behavior
     //on ctrl messages from both SCIC and SCIA
@@ -61,6 +72,7 @@ void main(void){
 
     msg = "\r\nEnter a message: \0";
     SCIASendMsg(msg);
+
 
     while(1){
 
@@ -131,7 +143,7 @@ void MySCIASetup(void){
 //////////////////////////////////////////////////////////////////
 //                                                              //
 //                                                              //
-//              LOOPBACK ENABLED FOR TEST!!!!                   //
+//             NO LOOPBACK ENABLED FOR TEST!!                   //
 //                                                              //
 //                                                              //
 //////////////////////////////////////////////////////////////////
@@ -149,8 +161,9 @@ void MySCICSetup(void){
                                         // async mode, idle-line protocol
         ScicRegs.SCICTL1.all = 0x0003;  // enable TX, RX, internal SCICLK,
                                         // Disable RX ERR, SLEEP, TXWAKE
-
-
+        ScicRegs.SCICTL2.all = 0x3;
+        ScicRegs.SCICTL2.bit.TXINTENA = 1;
+        ScicRegs.SCICTL2.bit.RXBKINTENA = 1;
 
         //
         // SCIC at 9600 baud
@@ -162,13 +175,11 @@ void MySCICSetup(void){
 
         ScicRegs.SCIHBAUD.all    =0x02;
         ScicRegs.SCILBAUD.all    =0x8B;
-        //ScicRegs.SCICTL2.bit.TXINTENA = 1;
-        //ScicRegs.SCICTL2.bit.RXBKINTENA = 1;
-        ScicRegs.SCICTL2.all = 0x3;
 
-        ScicRegs.SCICCR.bit.LOOPBKENA = 1; // Enable loop back
+
+
+//        ScicRegs.SCICCR.bit.LOOPBKENA = 1; // Enable loop back
         ScicRegs.SCICTL1.all = 0x0023;  // Relinquish SCI from Reset
-        SCICFifoInit();
 }
 
 
@@ -177,10 +188,11 @@ void MySCICSetup(void){
 void SCIAFifoInit(void){
 
 //DO NOT TOUCH SCIFFTX!!!
+//    SciaRegs.SCIFFTX.all = 0xC065;
     SciaRegs.SCIFFTX.all = 0xE065; //WORKING INTERRUPT TRIGGER FOR FIFO WITH AT LEAST TWO POS FILL
 //    SciaRegs.SCIFFTX.all = 0xE042; // FOR INTERRUPT TRIGGER WITH FIFO LESS THAN 2 POS
 //IT SHOULD BE SET TO GIVE INTERRUPT WHEN THE FIFO IS FULL
-    SciaRegs.SCIFFRX.all = 0xE06A;
+    SciaRegs.SCIFFRX.all = 0xE06F;
     SciaRegs.SCIFFCT.all = 0x0;
 
 }
@@ -190,6 +202,7 @@ void SCIAFifoInit(void){
 void SCIAXmit(int a){
 
     while (SciaRegs.SCIFFTX.bit.TXFFST != 0) {}
+
         SciaRegs.SCITXBUF.bit.TXDT =a;
 }
 
@@ -198,6 +211,7 @@ void SCIAXmit(int a){
 void SCIASendMsg(char * msg){
 
     int i;
+//    SciaRegs.SCIFFTX.bit.TXFIFORESET =1;  // enable TXFIFO
         i = 0;
         while(msg[i] != '\0')
         {
@@ -205,6 +219,7 @@ void SCIASendMsg(char * msg){
             i++;
         }
 
+//        SciaRegs.SCIFFTX.bit.TXFFINTCLR = 1 ;  // force TX-ISR
 }
 
 
@@ -255,10 +270,9 @@ interrupt void sciaRX_isr(void){
     int msgLen = SciaRegs.SCIFFRX.bit.RXFFIL;
 
     for(i=0;i<msgLen;i++) {
-        receivedMsg[i] = SciaRegs.SCIRXBUF.bit.SAR;
-        SciaRegs.SCIRXBUF.bit.SAR = 0;
+        receivedMsgA[i] = SciaRegs.SCIRXBUF.bit.SAR;
     }
-    msgDecoder(receivedMsg);
+//    msgDecoder(receivedMsgA);
     SciaRegs.SCIFFRX.bit.RXFIFORESET = 0;
     SciaRegs.SCIFFRX.bit.RXFIFORESET = 1;
     SciaRegs.SCIFFRX.bit.RXFFOVRCLR = 1;
@@ -266,8 +280,9 @@ interrupt void sciaRX_isr(void){
 
 
     for(i=0;i<msgLen;i++) {
-//        SciaRegs.SCITXBUF.bit.TXDT= receivedMsg[i];
-       receivedMsg[i]=0;
+       ScicRegs.SCITXBUF.bit.TXDT= receivedMsgC[i];
+       receivedMsgA[i]=0;
+       line[i]=0;
     }
     // Acknowledge this interrupt to get more from group 9
         //
@@ -278,17 +293,56 @@ interrupt void sciaRX_isr(void){
 
 interrupt void sciaTX_isr(void){
     //For the configuration of the SCIFFTX reg, this interrupt is triggered when the SCIFFTXBUF
-    //is less than or equal 2
+    //is less than or equal 5
     unsigned int i;
 
     // copy 16 character into SCI-A TX buffer
 
-    for(i=0;i<16;i++) SciaRegs.SCITXBUF.all= receivedMsg[i]; //SCITXBUF.bit.TXDT
+    for(i=0;i<16;i++) SciaRegs.SCITXBUF.all= receivedMsgA[i]; //SCITXBUF.bit.TXDT
 
     // Acknowledge this interrupt to receive more interrupts from group 9
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
 }
+
+interrupt void scicRX_isr(void){
+    //The FIFO is set to be full after 16 words
+        int  i;
+        int msgLen = ScicRegs.SCIFFRX.bit.RXFFIL;
+
+        for(i=0;i<msgLen;i++) {
+            receivedMsgC[i] = ScicRegs.SCIRXBUF.bit.SAR;
+        }
+        msgDecoder(receivedMsgC);
+        ScicRegs.SCIFFRX.bit.RXFIFORESET = 0;
+        ScicRegs.SCIFFRX.bit.RXFIFORESET = 1;
+        ScicRegs.SCIFFRX.bit.RXFFOVRCLR = 1;
+        ScicRegs.SCIFFRX.bit.RXFFINTCLR = 1;
+
+
+        for(i=0;i<msgLen;i++) {
+    //        SciaRegs.SCITXBUF.bit.TXDT= receivedMsg[i];
+           receivedMsgC[i]=0;
+           line[i]=0;
+        }
+        // Acknowledge this interrupt to get more from group 9
+            //
+            PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+
+}
+
+interrupt void scicTX_isr(void){
+    //For the configuration of the SCIFFTX reg, this interrupt is triggered when the SCIFFTXBUF
+    //is less than or equal 5
+    unsigned int i;
+
+    // copy 16 character into SCI-C TX buffer
+
+    for(i=0;i<16;i++) ScicRegs.SCITXBUF.all= receivedMsgC[i]; //SCITXBUF.bit.TXDT
+
+    // Acknowledge this interrupt to receive more interrupts from group 9
+
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;}
 
 void MyGpioSetup(void){
 
@@ -308,8 +362,8 @@ void MyGpioSetup(void){
     GpioCtrlRegs.GPCMUX2.bit.GPIO85 = 1;
     GpioCtrlRegs.GPCGMUX2.bit.GPIO84 = 1;
     GpioCtrlRegs.GPCGMUX2.bit.GPIO85 = 1;
-    GpioCtrlRegs.GPCMUX2.bit.GPIO90 = 2;
-    GpioCtrlRegs.GPCMUX2.bit.GPIO89 = 2;
+    GpioCtrlRegs.GPCMUX2.bit.GPIO90 = 2;        //SCI C RX to connect to Beaglebone's TX
+    GpioCtrlRegs.GPCMUX2.bit.GPIO89 = 2;        //SCI C TX to connect to Beaglebone's RX
     GpioCtrlRegs.GPCGMUX2.bit.GPIO90 = 1;
     GpioCtrlRegs.GPCGMUX2.bit.GPIO89 = 1;
 
@@ -323,81 +377,47 @@ void MyGpioSetup(void){
 
 }
 
-void msgDecoder(char *msg){
+void msgDecoder(char *inmsg){
     int i = 0;
-    //float x = 0.0;
-    if(msg[0] == 'D'){
-        while(msg[i] != '\n' && i<3){
-            c2f.c[i] = msg[i+1];
-            i++;
-        }
-        //x = *(float *)&rxBuff;
-        //sprintf(msg,"%8.0f%8.0f%8.0f%8.0f",rxBuff[3],rxBuff[2],rxBuff[1],rxBuff[0]);
-        //msg = strcat(msg,"\0");
-        SCIASendMsg("\r\n Float received :\r\n");
-        SCIASendMsg(c2f.c);
-        //rxBuff[0] = rxBuff[1] = rxBuff[2] = rxBuff[3] = 0;
-        return;
-    }
-    else if(msg[0] == 'C'){
-        if(strcmp(msg,"COFF")){
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            return;
-        }
-        else if(strcmp(msg,"CON")){
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            return;
-        }
-        else if(strcmp(msg,"CTEST")){
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            return;
-        }
-        else if(strcmp(msg,"CRESET")){
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(500*500);
-            GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(500*500);
-            return;
 
-        }
-        else{
-            SCIASendMsg("\r\n Invalid command arrived\r\n");
+    if(inmsg[0] == '\xff'){
+        SCIASendMsg("\r\n OverFlow Occurred, pay attention to send maximum 16 bytes in a row\r\n");
+    }else{
+        if(inmsg[0] == 'D'){
+            while(inmsg[i] != '\0' && i<3){
+                c2f.c[i] = inmsg[i+1];
+                i++;
+            }
+            SCIASendMsg("\r\n Float received :\r\n");
+            strncat(line, c2f.c, 5);
+            strncat(line, "\r\n\0", 5);
+            SCIASendMsg(line);
             return;
         }
+        else if(inmsg[0] == 'C'){
+            SCIASendMsg("\r\n Command received :\r\n");
+            SCIASendMsg(inmsg);
+            c2f.i = strcmp(inmsg,"CRESET\0");
+            SCIASendMsg(c2f.c);
+            if(!strncmp(inmsg,"COFF\0",4)){
+                SCIASendMsg("\r\nOFF\r\n\0");
+            }
+            else if(!strncmp(inmsg,"CON\0",3)){
+                SCIASendMsg("\r\nON\r\n\0");
+            }
+            else if(!strncmp(inmsg,"CDEMO\0",5)){
+                SCIASendMsg("\r\nDEMO\r\n\0");
+            }
+            else if(!strncmp(inmsg,"CRESET\0",6)){
+                SCIASendMsg("\r\nRESET\r\n\0");
+            }
+            else{
+                SCIASendMsg("\r\nNot able to recognize command\r\n\0");
+            }
 
+        }else {
+            SCIASendMsg("\r\n Invalid format arrived\r\n\0");
+        }
     }
 
 
@@ -424,8 +444,8 @@ void MyISRSetup(void){
     //PieVectTable.XINT1_INT = &xint1_isr;
     PieVectTable.SCIA_RX_INT = &sciaRX_isr;
     PieVectTable.SCIA_TX_INT = &sciaTX_isr;
-    //PieVectTable.SCIC_RX_INT = &scic_isr;
-    //PieVectTable.XINT2_INT = &xint2_isr;
+    PieVectTable.SCIC_RX_INT = &scicRX_isr;
+    PieVectTable.SCIC_TX_INT = &scicTX_isr;
     EDIS;    // This is needed to disable write to EALLOW protected registers
 
     //
@@ -433,11 +453,11 @@ void MyISRSetup(void){
     //
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;          // Enable the PIE block
     //PieCtrlRegs.PIEIER1.bit.INTx4 = 1;          // Enable PIE Group 1 INT4
-    PieCtrlRegs.PIEIER9.bit.INTx2 = 1;
+    PieCtrlRegs.PIEIER9.bit.INTx2 = 1;          // Enable the PIE for SCI A TX & RX
     PieCtrlRegs.PIEIER9.bit.INTx1 = 1;
-    //PieCtrlRegs.PIEIER8.bit.INTx5 = 1;
-    //PieCtrlRegs.PIEIER8.bit.INTx6 = 1;
-    IER = 0x100;                            // Enable CPU for INT1 and INT6 in which are interrupts for both XINT1 and SCIA SCIC
+    PieCtrlRegs.PIEIER8.bit.INTx5 = 1;          // Enable the PIE for SCI C TX & RX
+    PieCtrlRegs.PIEIER8.bit.INTx6 = 1;
+    IER |= M_INT9;                            // Enable CPU for INT9 in which are interrupts for both XINT1 and SCIA SCIC
     EINT;                                       // Enable Global Interrupts
 }
 

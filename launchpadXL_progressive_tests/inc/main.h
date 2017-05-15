@@ -24,13 +24,15 @@ void SCICXmit(int a);
 void SCICSendMsg(char * msg);
 void copyMsg(char * msg);
 void msgDecoder(char *msg);
+//char* concat(char *msg1, int len1, char *msg2, int len2);
 
 // function that are redefined here, the ISR routine is forced to look for them in the main file
 interrupt void xint1_isr(void);
 interrupt void sciaRX_isr(void);
 interrupt void sciaTX_isr(void);
+interrupt void scicRX_isr(void);
+interrupt void scicTX_isr(void);
 //interrupt void scic_isr(void);
-
 
 
 #endif /* INC_MAIN_H_ */

@@ -5,7 +5,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe/C28xx_CPU1" value="${build_artifact:launchpadXL_progressive_tests}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.Texas Instruments XDS100v2 USB Debug Probe/C28xx_CPU1" value="launchpadXL_progressive_tests"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:launchpadXL_progressive_tests}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe/C28xx_CPU1" value="/home/matteo/workspace_v7/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/Debug/launchpadXL_progressive_tests.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe/C28xx_CPU1" value="/home/matteo/workspace_v7/launchpadXL_F28377S_tests/launchpadXL_progressive_tests/Release FLASH/launchpadXL_progressive_tests.out"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/launchpadXL_progressive_tests"/>
 </listAttribute>
