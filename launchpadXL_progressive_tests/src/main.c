@@ -1,5 +1,4 @@
 /*
- *
  * main.c
  *
  *  Created on: May 9, 2017
@@ -13,14 +12,20 @@
 #include <float.h>
 
 
+
 #ifdef _LAUNCHXL_F28377S
 #define _LED_GPIO    12
 #else
 #define _LED_GPIO    28
 #endif
 
+union {
+   float f;
+   char c[4];
+} c2f;
+
 char receivedMsg[16] = {0};
-unsigned char rxBuff[4] = {0};
+//unsigned char rxBuff[4] = {0};
 char line[20];
 char *msg;
 
@@ -175,7 +180,7 @@ void SCIAFifoInit(void){
     SciaRegs.SCIFFTX.all = 0xE065; //WORKING INTERRUPT TRIGGER FOR FIFO WITH AT LEAST TWO POS FILL
 //    SciaRegs.SCIFFTX.all = 0xE042; // FOR INTERRUPT TRIGGER WITH FIFO LESS THAN 2 POS
 //IT SHOULD BE SET TO GIVE INTERRUPT WHEN THE FIFO IS FULL
-    SciaRegs.SCIFFRX.all = 0xE06F;
+    SciaRegs.SCIFFRX.all = 0xE06A;
     SciaRegs.SCIFFCT.all = 0x0;
 
 }
@@ -247,10 +252,11 @@ interrupt void xint1_isr(void){
 interrupt void sciaRX_isr(void){
     //The FIFO is set to be full after 16 words
     int  i;
-    int msgLen = SciaRegs.SCIFFRX.bit.RXFFIL -1;
+    int msgLen = SciaRegs.SCIFFRX.bit.RXFFIL;
 
     for(i=0;i<msgLen;i++) {
         receivedMsg[i] = SciaRegs.SCIRXBUF.bit.SAR;
+        SciaRegs.SCIRXBUF.bit.SAR = 0;
     }
     msgDecoder(receivedMsg);
     SciaRegs.SCIFFRX.bit.RXFIFORESET = 0;
@@ -258,14 +264,16 @@ interrupt void sciaRX_isr(void){
     SciaRegs.SCIFFRX.bit.RXFFOVRCLR = 1;
     SciaRegs.SCIFFRX.bit.RXFFINTCLR = 1;
 
-    for(i=0;i<msgLen;i++) {
-        SciaRegs.SCITXBUF.bit.TXDT= receivedMsg[i];
-        receivedMsg[i]=0;
-    }
 
+    for(i=0;i<msgLen;i++) {
+//        SciaRegs.SCITXBUF.bit.TXDT= receivedMsg[i];
+       receivedMsg[i]=0;
+    }
     // Acknowledge this interrupt to get more from group 9
-    //
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+        //
+        PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+
+
 }
 
 interrupt void sciaTX_isr(void){
@@ -317,67 +325,78 @@ void MyGpioSetup(void){
 
 void msgDecoder(char *msg){
     int i = 0;
-    float x;
+    //float x = 0.0;
     if(msg[0] == 'D'){
-        while(msg[i] != '\n'){
-            rxBuff[i] = msg[i+1];
+        while(msg[i] != '\n' && i<3){
+            c2f.c[i] = msg[i+1];
+            i++;
         }
-        x = *(float *)&rxBuff;
-        sprintf(msg,"%f",x);
-        msg = strcat(msg,"\0");
-        SCIASendMsg(msg);
+        //x = *(float *)&rxBuff;
+        //sprintf(msg,"%8.0f%8.0f%8.0f%8.0f",rxBuff[3],rxBuff[2],rxBuff[1],rxBuff[0]);
+        //msg = strcat(msg,"\0");
+        SCIASendMsg("\r\n Float received :\r\n");
+        SCIASendMsg(c2f.c);
+        //rxBuff[0] = rxBuff[1] = rxBuff[2] = rxBuff[3] = 0;
+        return;
     }
     else if(msg[0] == 'C'){
         if(strcmp(msg,"COFF")){
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
+            return;
         }
         else if(strcmp(msg,"CON")){
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
+            return;
         }
         else if(strcmp(msg,"CTEST")){
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
+            return;
         }
         else if(strcmp(msg,"CRESET")){
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 0);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
             GPIO_WritePin(_LED_GPIO, 1);
-            DELAY_US(200*500);
+            DELAY_US(500*500);
+            return;
 
         }
-        else{}
+        else{
+            SCIASendMsg("\r\n Invalid command arrived\r\n");
+            return;
+        }
 
     }
 
