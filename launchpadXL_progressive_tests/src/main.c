@@ -7,9 +7,6 @@
 
 #include "F28x_Project.h"
 #include "main.h"
-#include <stdio.h>
-#include <string.h>
-#include <float.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -25,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+<<<<<<< HEAD
 
 #ifdef _LAUNCHXL_F28377S
 #define _LED_GPIO    12
@@ -468,3 +466,6 @@ void MyXINTSetup(void){
        XintRegs.XINT1CR.bit.ENABLE = 1;            // Enable XINT1
 
 }
+=======
+void main(void){}
+>>>>>>> ccb318e3969e88add53ac1a7d964870abdf7dfde
