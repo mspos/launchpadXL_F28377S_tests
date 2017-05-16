@@ -10,7 +10,7 @@
 
 
 
-<<<<<<< HEAD
+
 
 void MyGpioSetup(void);
 void MyISRSetup(void);
@@ -36,6 +36,4 @@ interrupt void scicTX_isr(void);
 //interrupt void scic_isr(void);
 
 
-=======
->>>>>>> ccb318e3969e88add53ac1a7d964870abdf7dfde
 #endif /* INC_MAIN_H_ */

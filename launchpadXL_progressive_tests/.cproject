@@ -52,12 +52,9 @@
 									<listOptionValue builtIn="false" value="CPU1"/>
 									<listOptionValue builtIn="false" value="_LAUNCHXL_F28377S"/>
 								</option>
-<<<<<<< HEAD
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.ADVICE__PERFORMANCE.466057406" name="Provide advice on optimization techniques (--advice:performance)" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.ADVICE__PERFORMANCE" value="--advice:performance=all" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_LEVEL.4952998" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_LEVEL" value="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_LEVEL.4" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_FOR_SPEED.2091458754" name="Speed vs. size trade-offs (--opt_for_speed, -mf)" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_FOR_SPEED" value="com.ti.ccstudio.buildDefinitions.C2000_16.9.compilerID.OPT_FOR_SPEED.2" valueType="enumerated"/>
-=======
->>>>>>> ccb318e3969e88add53ac1a7d964870abdf7dfde
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__C_SRCS.1977080820" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__C_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__CPP_SRCS.1710007818" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__CPP_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__ASM_SRCS.1522805870" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.compiler.inputType__ASM_SRCS"/>
@@ -243,11 +240,8 @@
 									<listOptionValue builtIn="false" value="&quot;2837xS_Generic_RAM_lnk.cmd&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;F2837xS_Headers_nonBIOS.cmd&quot;"/>
 								</option>
-<<<<<<< HEAD
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_16.9.linkerID.ENTRY_POINT.758376701" name="Specify program entry point for the output module (--entry_point, -e)" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.linkerID.ENTRY_POINT" value="code_start" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_16.9.linkerID.HEAP_SIZE.804516089" name="Heap size for C/C++ dynamic memory allocation (--heap_size, -heap)" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.linkerID.HEAP_SIZE" value="0x400" valueType="string"/>
-=======
->>>>>>> ccb318e3969e88add53ac1a7d964870abdf7dfde
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__CMD_SRCS.1580331391" name="Linker Command Files" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__CMD_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__CMD2_SRCS.1745683341" name="Linker Command Files" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__CMD2_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__GEN_CMDS.1967644550" name="Generated Linker Command Files" superClass="com.ti.ccstudio.buildDefinitions.C2000_16.9.exeLinker.inputType__GEN_CMDS"/>
